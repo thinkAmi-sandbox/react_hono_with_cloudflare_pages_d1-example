@@ -13,3 +13,5 @@
 - Wrangler 3.47.0
 
 ## Related Blog (Written in Japanese)
+
+- [Hono + React + TanStack Router + TanStack Query + Chart.js + Drizzle ORMなアプリを、Cloudflare Pages と D1 に乗せてみた - メモ的な思考的な](https://thinkami.hatenablog.com/entry/2024/05/05/120446)
