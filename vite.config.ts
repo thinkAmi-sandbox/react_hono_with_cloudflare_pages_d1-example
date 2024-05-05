@@ -2,8 +2,11 @@ import pages from '@hono/vite-cloudflare-pages'
 import devServer from '@hono/vite-dev-server'
 import {defineConfig} from 'vite'
 import {TanStackRouterVite} from "@tanstack/router-vite-plugin"
+import {getPlatformProxy} from "wrangler";
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(async ({ mode }) => {
+  const { env, dispose } = await getPlatformProxy()
+
   if (mode === 'client') {
     return {
       build: {
@@ -28,6 +31,12 @@ export default defineConfig(({ mode }) => {
         pages(),
         devServer({
           entry: 'src/index.tsx',
+          env: env,
+          plugins: [
+            {
+              onServerClose: dispose
+            }
+          ]
         })
       ]
     }

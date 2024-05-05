@@ -1,21 +1,44 @@
 import {Hono} from 'hono'
 import {renderToString} from "react-dom/server"
+import {D1Database} from "@cloudflare/workers-types"
+import {drizzle} from "drizzle-orm/d1";
+import {apples} from "./schema/apples";
+import {eq, sql} from "drizzle-orm";
+import {colors} from "./schema/colors";
 
-const app = new Hono()
+type Bindings = {
+  DB: D1Database;
+};
 
-const appleRoute = app.get('/api/apples', (c) => {
+const app = new Hono<{Bindings: Bindings}>()
+
+const appleRoute = app.get('/api/apples', async (c) => {
+  const db = drizzle(c.env.DB)
+
+  const results = await db.select({
+    name: apples.name,
+    // workaround
+    // https://github.com/drizzle-team/drizzle-orm/issues/555
+    // color: colors.name,
+    color: sql`${colors.name}`.as('colorName'),
+    quantity: apples.quantity,
+  }).from(apples).innerJoin(colors, eq(apples.colorId, colors.id)).all()
+
+  console.log(results)
+
+  const labels = results.map(r => r.name) ?? []
+  // テーブルから値を取得していることを分かりやすくするため、テーブルの値 + 1 を設定
+  const quantities = results.map(r => r.quantity ? r.quantity + 1 : 0) ?? []
+  const colorNames = results.map(r => r.color) ?? []
+
   return c.json({
-    labels: ['奥州ロマン', 'シナノゴールド', 'ピンクレディ', 'ブラムリー'],
+    labels: labels,
     datasets: [
       {
         label: '購入数',
-        data: [1, 5, 3, 2],
-        backgroundColor: [
-          'firebrick', 'gold', 'pink', 'mediumseagreen'
-        ],
-        borderColor: [
-          'firebrick', 'gold', 'pink', 'mediumseagreen'
-        ],
+        data: quantities,
+        backgroundColor: colorNames,
+        borderColor: colorNames,
         borderWidth: 1
       }
     ]

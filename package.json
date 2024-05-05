@@ -2,9 +2,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build:frontend": "vite build --mode client",
+    "build:backend": "vite build",
     "preview": "wrangler pages dev dist",
-    "deploy": "vite build --mode client && vite build && wrangler pages deploy dist"
+    "deploy": "wrangler pages deploy dist"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.34.1",
@@ -13,6 +14,7 @@
     "@tanstack/router-devtools": "^1.31.17",
     "@tanstack/router-vite-plugin": "^1.31.18",
     "chart.js": "^4.4.2",
+    "drizzle-orm": "^0.30.10",
     "hono": "^4.3.1",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
@@ -24,6 +26,7 @@
     "@hono/vite-dev-server": "^0.12.0",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
+    "drizzle-kit": "^0.20.17",
     "vite": "^5.0.12",
     "wrangler": "^3.47.0"
   }
